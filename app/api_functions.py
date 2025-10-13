@@ -3,16 +3,16 @@ import json
 
 
 API_URL = 'https://api.opendota.com/api/'
-arbitrally_large_match_id = 10 ** 12
+large_match_id = 10 ** 12
 
 
-def get_100_match_ids_lower_than_n(first_match_id: int = arbitrally_large_match_id) -> list[int]:
+def get_100_match_ids_lower_than_n(first_match_id: int = large_match_id) -> list[int]:
     matches = json.loads(req.get(
         API_URL + 'parsedMatches',
         params={'less_than_match_id': first_match_id}).text)
     return [el['match_id'] for el in matches]
 
-def get_m_matches_lower_than_n(number_of_matches: int, first_match_id: int = arbitrally_large_match_id) -> list[int]:
+def get_m_matches_lower_than_n(number_of_matches: int, first_match_id: int = large_match_id) -> list[int]:
     '''number of matches should be divisible by 100'''
     match_ids = []
     for _ in range(number_of_matches // 100):
