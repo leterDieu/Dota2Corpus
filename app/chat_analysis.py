@@ -9,7 +9,7 @@ with open('./app/constants/chat_wheel.json', 'r', encoding='utf-8') as file:
 a = [{'slot': 1, 'key': 'blah blah'}]
 
 
-def get_match_chat(match: dict, key_offset_seconds: int = 2) -> dict:
+def get_match_chat(match: dict, key_offset_seconds: int = 2) -> list[dict]:
     '''get match chat'''
     chat = match['chat']
     chat_refactored = []
