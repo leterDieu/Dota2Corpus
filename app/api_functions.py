@@ -42,4 +42,3 @@ def get_and_write_match_ids_to_file(number_of_matches: int, filename: str) -> No
     match_ids = get_m_matches_lower_than_n(number_of_matches)
     write_match_ids_to_file(match_ids, filename)
     return None
-print(get_match_chat(8507526820))
