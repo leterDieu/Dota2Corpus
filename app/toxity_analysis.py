@@ -1,20 +1,23 @@
 from detoxify import Detoxify
-from api_functions import get_match_chat
-import json
-texts = []
-with open('/home/flcl/school57_prog/11/Dota2Corpus/app/match_ids.json', 'r', encoding='utf-8') as file:
-    ids = json.load(file)
+from api_functions import get_match_info
+from chat_analysis import get_match_chat
 
-    
-count = 0
-for i in ids:
-    print(i)
-    count+=1
-    print(count)
-    texts.append(get_match_chat(i))
-        
-for i in texts:
-    if i != []:
-        print(i[0]['key'])
-        print(Detoxify('multilingual').predict(i[0]['key'])['toxicity'])
+
+def count_toxity(a):
+    toxity_dict = {}
+    for i in a:
+        if i['slot'] not in toxity_dict.keys():
+            toxity_dict[str(i['slot'])] = [Detoxify('multilingual').predict(i['key'])['toxicity'], 1]
+        else:
+            toxity_dict[str(i['slot'])][0] += Detoxify('multilingual').predict(i['key'])['toxicity']
+            toxity_dict[str(i['slot'])][1] += 1
+    for i in toxity_dict:
+        toxity_dict[i] = toxity_dict[i][0] / toxity_dict[i][1]
+    return toxity_dict
+print(count_toxity(get_match_chat(get_match_info(8507472882))))
+# match_id
+# player
+# toxity
+# team_toxity
+# match_toxity
 
