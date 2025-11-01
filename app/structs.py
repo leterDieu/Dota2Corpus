@@ -20,7 +20,7 @@ class Behaviour:
 
     def __init__(self, player_info: dict) -> None:  # add rank tiers
         self.account_id = player_info['account_id']
-        player_data = self.get_player_data()
+        self.player_data = self.get_player_data()
         self.name = player_data[1]
         self.rating = player_data[0]
         self.pings = player_info['pings']
