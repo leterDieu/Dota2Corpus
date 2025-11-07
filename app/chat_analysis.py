@@ -6,12 +6,9 @@ from api_functions import get_match_info
 with open('./app/constants/chat_wheel.json', 'r', encoding='utf-8') as file:
     CHAT_WHEEL = json.load(file)
 
-a = [{'slot': 1, 'key': 'blah blah'}]
 
-
-def get_match_chat(match: dict, key_offset_seconds: int = 2) -> list[dict]:
+def get_refactored_chat(chat: list, key_offset_seconds: int = 2) -> list[dict]:
     '''get match chat'''
-    chat = match['chat']
     chat_refactored = []
     merge_to_previous = False
     for i, entry in enumerate(chat):
@@ -43,14 +40,11 @@ def get_match_chat(match: dict, key_offset_seconds: int = 2) -> list[dict]:
 
     return chat_refactored
 
-def get_match_chat_str(match: dict, key_offset_seconds: int = 2) -> str:
+def get_refactored_chat_str(chat: list, key_offset_seconds: int = 2) -> str:
     '''display chat as dialogue'''
 
-    chat_refactored = get_match_chat(match, key_offset_seconds=key_offset_seconds)
+    chat_refactored = get_refactored_chat(chat, key_offset_seconds=key_offset_seconds)
     text = ''
     for entry in chat_refactored:
         text += f'- {entry['key']} - player {entry['slot']}.\n'
     return text
-
-
-print(get_match_chat_str(get_match_info(8507472882)))
