@@ -17,13 +17,13 @@ with open('app/match_ids.json', 'r', encoding='utf-8') as f:
     ids = json.loads(f.read())
    
 try: 
-    previous_df = pd.read_csv('players_info_hepa.csv', index_col=0)
+    previous_df = pd.read_csv('players_info.csv', index_col=0)
     offset = previous_df.shape[0] // 10
 except:
     previous_df = pd.DataFrame()
     offset = 0
     
-offset_personal = 400 # Fedor: 200, Ilya: 400
+offset_personal = 0 # Fedor: 200, Ilya: 400
 
 df_arr = []
 for i in range(MATCHES_PER_DAY // MATCHES_PER_MINUTE):
@@ -36,4 +36,4 @@ for i in range(MATCHES_PER_DAY // MATCHES_PER_MINUTE):
 
 new_df = pd.concat(df_arr, axis=0)
 df = pd.concat([previous_df, new_df], axis=0)
-df.to_csv('players_info_hepa.csv')
+df.to_csv('players_info.csv')
