@@ -84,36 +84,37 @@ class Match:
     chat: list[dict]
     estimated_rank_universal: int | None # rank * 5 + stars
     duration: int
-    game_mode: int
     game_mode_str: str
     radiant_score: int
     dire_score: int
     radiant_win: bool
     start_time: int
-    region: int
     region_str: str
-    lobby_type: int
     lobby_type_str: str
+    estimated_rank_universal:  float | None
     behaviours: list[Behaviour]
 
-    def __init__(self, match_id: int) -> None:
-        match_resp = json.loads(requests.get(API_URL + f'matches/{match_id}', timeout=10).text)
+    def analyze(self, match_id) -> None:
+        match_responce = json.loads(requests.get(API_URL + f'matches/{match_id}', timeout=10).text)
+        self.__init__(match_responce)
+
+    def __init__(self, match_resp) -> None:
         self.match_id = match_resp['match_id']
         self.chat = match_resp['chat']
         self.duration = match_resp['duration']
-        self.game_mode = match_resp['game_mode']
-        self.game_mode_str = GAME_MODES[str(self.game_mode)]['name']
         self.radiant_score = match_resp['radiant_score']
         self.dire_score = match_resp['dire_score']
         self.radiant_win = match_resp['radiant_win']
         self.start_time = match_resp['start_time']
-        self.region = match_resp['region']
-        self.region_str = REGIONS[str(self.region)]
-        self.lobby_type = match_resp['lobby_type']
-        self.lobby_type_str = LOBBY_TYPES[str(self.lobby_type)]['name']
+
+        game_mode = match_resp['game_mode']
+        self.game_mode_str = GAME_MODES[str(game_mode)]['name']
+        region = match_resp['region']
+        self.region_str = REGIONS[str(region)]
+        lobby_type = match_resp['lobby_type']
+        self.lobby_type_str = LOBBY_TYPES[str(lobby_type)]['name']
 
         self.behaviours = [Behaviour(info) for info in match_resp['players']]
-        
         self.estimated_rank_universal = 0
         number_of_not_none_ranks = 0
         for behaviour in self.behaviours:
