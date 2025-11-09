@@ -1,3 +1,5 @@
+import pandas as pd
+
 import requests
 import json
 
@@ -31,7 +33,7 @@ class Behaviour:
     hero_healing_per_minute: float
     pings: int | None
     buyback_count_per_minute: float
-    buyback_before_20: list
+    buyback_before_20: bool
 
     def get_player_data(self):
         player_data = json.loads(requests.get(API_URL + f'players/{self.account_id}', timeout=10).text)
@@ -80,6 +82,7 @@ class Behaviour:
 class Match:
     match_id: int
     chat: list[dict]
+    estimated_rank_universal: int | None # rank * 5 + stars
     duration: int
     game_mode: int
     game_mode_str: str
@@ -92,7 +95,6 @@ class Match:
     lobby_type: int
     lobby_type_str: str
     behaviours: list[Behaviour]
-    estimated_rank_universal: int | None # rank * 5 + stars
 
     def __init__(self, match_id: int) -> None:
         match_resp = json.loads(requests.get(API_URL + f'matches/{match_id}', timeout=10).text)
@@ -131,6 +133,43 @@ class Match:
         
     def count_toxicity(self, key_offset_seconds: int = 2) -> dict:
         return count_toxicity(self.get_refactored_chat(key_offset_seconds))
+        
+    def to_df(self) -> pd.DataFrame:
+        behavior_df_arr = []
+        for behaviour in self.behaviours:
+                behavior_df_arr.append(pd.DataFrame(data={
+                'match_id': self.match_id,
+                'chat': None,
+                'estimated_rank_universal': self.estimated_rank_universal,
+                'duration': self.duration,
+                'game_mode': self.game_mode,
+                'game_mode_str': self.game_mode_str,
+                'radiant_score': self.radiant_score,
+                'dire_score': self.dire_score,
+                'radiant_win': self.radiant_win,
+                'start_time': self.start_time,
+                'region': self.region,
+                'region_str': self.region_str,
+                'lobby_type': self.lobby_type,
+                'lobby_type_str': self.lobby_type_str,
+                'account_id': behaviour.account_id,
+                'name': behaviour.name,
+                'rating': behaviour.rating,
+                'rank_universal': behaviour.rank_universal,
+                'party_size': behaviour.party_size,
+                'hero_id': behaviour.hero_id,
+                'is_radiant': behaviour.is_radiant,
+                'winner': behaviour.winner,
+                'kills_per_minute': behaviour.kda_per_minute[0],
+                'deaths_per_minutes': behaviour.kda_per_minute[1],
+                'assists': behaviour.kda_per_minute[2],
+                'gold_per_minute': behaviour.gold_per_minute,
+                'hero_healing_per_minute': behaviour.hero_healing_per_minute,
+                'pings': behaviour.pings,
+                'buyback_count_per_minute': behaviour.buyback_count_per_minute,
+                'buyback_before_20': behaviour.buyback_before_20
+            }))
+        return pd.concat(behavior_df_arr, axis=1)
     
     def __str__(self) -> str:
         return f"""{self.match_id}: (chat is hided), {self.duration}, {self.game_mode_str}, {self.lobby_type_str}, {self.start_time}, {self.region_str}, {self.estimated_rank_universal}"""
