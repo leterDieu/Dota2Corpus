@@ -140,7 +140,7 @@ class Match:
         
     def to_df(self, key_offset_seconds: int = 2) -> pd.DataFrame:
         behavior_df_arr = []
-        match_chat = self.get_refactored_chat()
+        match_chat = self.get_refactored_chat(key_offset_seconds)
         toxicity_dict = self.count_toxicity(key_offset_seconds)
         for behaviour in self.behaviours:
                 behavior_df_arr.append(pd.DataFrame(data={
