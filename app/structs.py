@@ -98,8 +98,8 @@ class Match:
 
     @staticmethod
     def analyze(match_id) -> None:
-        match_responce = json.loads(requests.get(API_URL + f'matches/{match_id}', timeout=10).text)
-        return Match(match_responce)
+        match_response = json.loads(requests.get(API_URL + f'matches/{match_id}', timeout=10).text)
+        return Match(match_response)
 
     def __init__(self, match_resp) -> None:
         self.match_id = match_resp['match_id']
