@@ -49,7 +49,7 @@ class Behaviour:
 
     def __init__(self, player_info: dict) -> None:
         self.account_id = player_info['account_id']
-        self.slot = player_info['player_slot']
+        self.player_slot = player_info['player_slot']
         self.rating, self.name = self.get_player_data()
         
         rank_tier = player_info['rank_tier']
@@ -140,10 +140,11 @@ class Match:
         
     def to_df(self) -> pd.DataFrame:
         behavior_df_arr = []
+        match_chat = self.get_refactored_chat()
         for behaviour in self.behaviours:
                 behavior_df_arr.append(pd.DataFrame(data={
                 'match_id': self.match_id,
-                'chat': None,
+                'chat': '. '.join([message['key'] for message in match_chat if message['slot'] == behaviour.player_slot]),
                 'estimated_rank_universal': self.estimated_rank_universal,
                 'duration': self.duration,
                 'game_mode_str': self.game_mode_str,
