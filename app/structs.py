@@ -170,6 +170,17 @@ class Match:
                 'buyback_before_20': behaviour.buyback_before_20
             }))
         return pd.concat(behavior_df_arr, axis=1)
-    
-    def __str__(self) -> str:
-        return f"""{self.match_id}: (chat is hided), {self.duration}, {self.game_mode_str}, {self.lobby_type_str}, {self.start_time}, {self.region_str}, {self.estimated_rank_universal}"""
+        
+     def __str__(self) -> str:
+         return f"""{self.match_id}: (chat is hided), {self.duration}, {self.game_mode_str}, {self.lobby_type_str}, {self.start_time}, {self.region_str}, {self.estimated_rank_universal}"""
+
+    class MatchStack:
+        match_arr: list[Match]
+        
+        def __init__(self, match_arr: list[Match]) -> None:
+            self.match_arr = match_arr
+            
+        def to_df(self) -> pd.DataFrame:
+            return concat([match.to_df() for match in self.match_arr], axis=1)    
+
+   
