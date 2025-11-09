@@ -102,6 +102,18 @@ class Match:
         match_response = json.loads(requests.get(API_URL + f'matches/{match_id}', timeout=10).text)
         return Match(match_response)
 
+    @staticmethod
+    def concat_matches(matches_dfs: list[pd.DataFrame]):
+        return pd.concat(matches_dfs, axis=1)
+    
+    @staticmethod
+    def create_dataframe_by_id_list(matches_id: list[int], key_offset_seconds: int = 2):
+        matches_dfs = []
+        for id in matches_id:
+            match_ = Match.analyze(id)
+            matches_dfs.append(match_.to_df(key_offset_seconds))
+        return Match.concat_matches(matches_dfs)
+
     def __init__(self, match_resp) -> None:
         self.match_id = match_resp['match_id']
         self.chat = match_resp['chat']
@@ -152,7 +164,7 @@ class Match:
                 'match_id': self.match_id,
                 'chat': '. '.join([message['key'] for message in match_chat if message['slot'] == behaviour.player_slot]),
                 'toxicity': toxicity_dict[behaviour.player_slot],
-                'toxicity_context': toxicity_context_dict[behaviour.player_slot]
+                'toxicity_context': toxicity_context_dict[behaviour.player_slot],
                 'estimated_rank_universal': self.estimated_rank_universal,
                 'duration': self.duration,
                 'game_mode_str': self.game_mode_str,
