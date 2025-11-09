@@ -20,6 +20,7 @@ with open('app/constants/region.json') as f:
 
 class Behaviour:
     account_id: int
+    player_slot: int
     name: str | None
     rating: float | None
     rank_universal: int | None # rank * 5 + stars
@@ -48,6 +49,7 @@ class Behaviour:
 
     def __init__(self, player_info: dict) -> None:
         self.account_id = player_info['account_id']
+        self.slot = player_info['player_slot']
         self.rating, self.name = self.get_player_data()
         
         rank_tier = player_info['rank_tier']
@@ -152,6 +154,7 @@ class Match:
                 'region_str': self.region_str,
                 'lobby_type_str': self.lobby_type_str,
                 'account_id': behaviour.account_id,
+                'player_slot': behaviour.player_slot,
                 'name': behaviour.name,
                 'rating': behaviour.rating,
                 'rank_universal': behaviour.rank_universal,
