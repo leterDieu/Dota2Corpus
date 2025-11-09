@@ -12,10 +12,9 @@ def get_refactored_chat(chat: list, key_offset_seconds: int = 2) -> list[dict]:
             merge_to_previous = entry['time'] - chat[
                 i - 1]['time'] <= key_offset_seconds and entry['slot'] == chat[
                     i - 1]['slot']
-            # and chat[i - 1]['type'] == entry['type']
 
         if entry['type'] == 'chat':
-            if merge_to_previous:
+            if merge_to_previous and chat_refactored:
                 chat_refactored[-1]['key'] += ' ' + entry['key']
                 continue
             chat_refactored.append({

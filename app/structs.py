@@ -104,7 +104,7 @@ class Match:
 
     @staticmethod
     def concat_matches(matches_dfs: list[pd.DataFrame]):
-        return pd.concat(matches_dfs, axis=1)
+        return pd.concat(matches_dfs, axis=0)
     
     @staticmethod
     def create_dataframe_by_id_list(matches_id: list[int], key_offset_seconds: int = 2):
@@ -161,38 +161,40 @@ class Match:
         toxicity_context_dict = self.count_toxicity_context()
         for behaviour in self.behaviours:
                 behavior_df_arr.append(pd.DataFrame(data={
-                'match_id': self.match_id,
-                'chat': '. '.join([message['key'] for message in match_chat if message['slot'] == behaviour.player_slot]),
-                'toxicity': toxicity_dict[behaviour.player_slot],
-                'toxicity_context': toxicity_context_dict[behaviour.player_slot],
-                'estimated_rank_universal': self.estimated_rank_universal,
-                'duration': self.duration,
-                'game_mode_str': self.game_mode_str,
-                'radiant_score': self.radiant_score,
-                'dire_score': self.dire_score,
-                'radiant_win': self.radiant_win,
-                'start_time': self.start_time,
-                'region_str': self.region_str,
-                'lobby_type_str': self.lobby_type_str,
-                'account_id': behaviour.account_id,
-                'player_slot': behaviour.player_slot,
-                'name': behaviour.name,
-                'rating': behaviour.rating,
-                'rank_universal': behaviour.rank_universal,
-                'party_size': behaviour.party_size,
-                'hero_id': behaviour.hero_id,
-                'is_radiant': behaviour.is_radiant,
-                'winner': behaviour.winner,
-                'kills_per_minute': behaviour.kda_per_minute[0],
-                'deaths_per_minutes': behaviour.kda_per_minute[1],
-                'assists': behaviour.kda_per_minute[2],
-                'gold_per_minute': behaviour.gold_per_minute,
-                'hero_healing_per_minute': behaviour.hero_healing_per_minute,
-                'pings': behaviour.pings,
-                'buyback_count_per_minute': behaviour.buyback_count_per_minute,
-                'buyback_before_20': behaviour.buyback_before_20
+                'match_id': [self.match_id],
+                'chat': ['. '.join([message['key'] for message in match_chat if message['slot'] == behaviour.player_slot])],
+                'toxicity': [toxicity_dict[behaviour.player_slot] if behaviour.player_slot in toxicity_dict else None],
+                'toxicity_context': [toxicity_context_dict[behaviour.player_slot] if behaviour.player_slot in toxicity_context_dict else None],
+                'estimated_rank_universal': [self.estimated_rank_universal],
+                'duration': [self.duration],
+                'game_mode_str': [self.game_mode_str],
+                'radiant_score': [self.radiant_score],
+                'dire_score': [self.dire_score],
+                'radiant_win': [self.radiant_win],
+                'start_time': [self.start_time],
+                'region_str': [self.region_str],
+                'lobby_type_str': [self.lobby_type_str],
+                'account_id': [behaviour.account_id],
+                'player_slot': [behaviour.player_slot],
+                'name': [behaviour.name],
+                'rating': [behaviour.rating],
+                'rank_universal': [behaviour.rank_universal],
+                'party_size': [behaviour.party_size],
+                'hero_id': [behaviour.hero_id],
+                'is_radiant': [behaviour.is_radiant],
+                'winner': [behaviour.winner],
+                'kills_per_minute': [behaviour.kda_per_minute[0]],
+                'deaths_per_minutes': [behaviour.kda_per_minute[1]],
+                'assists': [behaviour.kda_per_minute[2]],
+                'gold_per_minute': [behaviour.gold_per_minute],
+                'hero_healing_per_minute': [behaviour.hero_healing_per_minute],
+                'pings': [behaviour.pings],
+                'buyback_count_per_minute': [behaviour.buyback_count_per_minute],
+                'buyback_before_20': [behaviour.buyback_before_20]
             }))
-        return pd.concat(behavior_df_arr, axis=1)
+        return pd.concat(behavior_df_arr, axis=0)
         
     def __str__(self) -> str:
          return f"""{self.match_id}: (chat is hided), {self.duration}, {self.game_mode_str}, {self.lobby_type_str}, {self.start_time}, {self.region_str}, {self.estimated_rank_universal}"""
+
+Match.create_dataframe_by_id_list([8507573670, 8507572415, 8507569033]).to_csv('t.csv')
