@@ -159,12 +159,15 @@ class Match:
         match_chat = self.get_refactored_chat(key_offset_seconds)
         toxicity_dict = self.count_toxicity(key_offset_seconds)
         toxicity_context_dict = self.count_toxicity_context()
+        print(match_chat)
         for behaviour in self.behaviours:
-                behavior_df_arr.append(pd.DataFrame(data={
+            player_slot = str((behaviour.player_slot % 128) + (behaviour.player_slot // 128) * 5)
+            print(player_slot)
+            behavior_df_arr.append(pd.DataFrame(data={
                 'match_id': [self.match_id],
-                'chat': ['. '.join([message['key'] for message in match_chat if message['slot'] == behaviour.player_slot])],
-                'toxicity': [toxicity_dict[behaviour.player_slot] if behaviour.player_slot in toxicity_dict else None],
-                'toxicity_context': [toxicity_context_dict[behaviour.player_slot] if behaviour.player_slot in toxicity_context_dict else None],
+                'chat': ['. '.join([message['key'] for message in match_chat if message['slot'] == int(player_slot)])],
+                'toxicity': [toxicity_dict[player_slot] if player_slot in toxicity_dict else None],
+                'toxicity_context': [toxicity_context_dict[player_slot] if player_slot in toxicity_context_dict else None],
                 'estimated_rank_universal': [self.estimated_rank_universal],
                 'duration': [self.duration],
                 'game_mode_str': [self.game_mode_str],
@@ -175,7 +178,7 @@ class Match:
                 'region_str': [self.region_str],
                 'lobby_type_str': [self.lobby_type_str],
                 'account_id': [behaviour.account_id],
-                'player_slot': [behaviour.player_slot],
+                'player_slot': [player_slot],
                 'name': [behaviour.name],
                 'rating': [behaviour.rating],
                 'rank_universal': [behaviour.rank_universal],
