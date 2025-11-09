@@ -94,9 +94,10 @@ class Match:
     estimated_rank_universal:  float | None
     behaviours: list[Behaviour]
 
-    def analyze(self, match_id) -> None:
+    @staticmethod
+    def analyze(match_id) -> None:
         match_responce = json.loads(requests.get(API_URL + f'matches/{match_id}', timeout=10).text)
-        self.__init__(match_responce)
+        return Match(match_responce)
 
     def __init__(self, match_resp) -> None:
         self.match_id = match_resp['match_id']
@@ -172,16 +173,14 @@ class Match:
             }))
         return pd.concat(behavior_df_arr, axis=1)
         
-     def __str__(self) -> str:
+    def __str__(self) -> str:
          return f"""{self.match_id}: (chat is hided), {self.duration}, {self.game_mode_str}, {self.lobby_type_str}, {self.start_time}, {self.region_str}, {self.estimated_rank_universal}"""
 
-    class MatchStack:
-        match_arr: list[Match]
+class MatchStack:
+    match_arr: list[Match]
+    
+    def __init__(self, match_arr: list[Match]) -> None:
+        self.match_arr = match_arr
         
-        def __init__(self, match_arr: list[Match]) -> None:
-            self.match_arr = match_arr
-            
-        def to_df(self) -> pd.DataFrame:
-            return concat([match.to_df() for match in self.match_arr], axis=1)    
-
-   
+    def to_df(self) -> pd.DataFrame:
+        return pd.concat([match.to_df() for match in self.match_arr], axis=1)    
