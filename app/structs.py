@@ -2,7 +2,6 @@ import pandas as pd
 
 import requests
 import json
-import math
 
 from chat_analysis import get_refactored_chat, get_refactored_chat_str
 from toxicity_analysis import count_toxicity
@@ -94,11 +93,10 @@ class Match:
     start_time: int
     region_str: str
     lobby_type_str: str
-    estimated_rank_universal:  float | None
     behaviours: list[Behaviour]
 
     @staticmethod
-    def analyze(match_id) -> None:
+    def analyze(match_id):
         match_response = json.loads(requests.get(API_URL + f'matches/{match_id}', timeout=10).text)
         return Match(match_response)
 
@@ -115,6 +113,8 @@ class Match:
         return Match.concat_matches(matches_dfs)
 
     def __init__(self, match_resp) -> None:
+        if 'match_id' not in match_resp:
+            print(match_resp)
         self.match_id = match_resp['match_id']
         self.chat = match_resp['chat']
         self.duration = match_resp['duration']
@@ -152,17 +152,15 @@ class Match:
         return count_toxicity(self.get_refactored_chat(key_offset_seconds))
         
     def count_toxicity_context(self) -> dict:
-        return self.count_toxicity(math.inf)
+        return self.count_toxicity(10**8)
         
     def to_df(self, key_offset_seconds: int = 2) -> pd.DataFrame:
         behavior_df_arr = []
         match_chat = self.get_refactored_chat(key_offset_seconds)
         toxicity_dict = self.count_toxicity(key_offset_seconds)
         toxicity_context_dict = self.count_toxicity_context()
-        print(match_chat)
         for behaviour in self.behaviours:
             player_slot = str((behaviour.player_slot % 128) + (behaviour.player_slot // 128) * 5)
-            print(player_slot)
             behavior_df_arr.append(pd.DataFrame(data={
                 'match_id': [self.match_id],
                 'chat': ['. '.join([message['key'] for message in match_chat if message['slot'] == int(player_slot)])],
@@ -199,5 +197,3 @@ class Match:
         
     def __str__(self) -> str:
          return f"""{self.match_id}: (chat is hided), {self.duration}, {self.game_mode_str}, {self.lobby_type_str}, {self.start_time}, {self.region_str}, {self.estimated_rank_universal}"""
-
-Match.create_dataframe_by_id_list([8507573670, 8507572415, 8507569033]).to_csv('t.csv')
