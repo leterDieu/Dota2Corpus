@@ -138,13 +138,15 @@ class Match:
     def count_toxicity(self, key_offset_seconds: int = 2) -> dict:
         return count_toxicity(self.get_refactored_chat(key_offset_seconds))
         
-    def to_df(self) -> pd.DataFrame:
+    def to_df(self, key_offset_seconds: int = 2) -> pd.DataFrame:
         behavior_df_arr = []
         match_chat = self.get_refactored_chat()
+        toxicity_dict = self.count_toxicity(key_offset_seconds)
         for behaviour in self.behaviours:
                 behavior_df_arr.append(pd.DataFrame(data={
                 'match_id': self.match_id,
                 'chat': '. '.join([message['key'] for message in match_chat if message['slot'] == behaviour.player_slot]),
+                'toxicity': toxicity_dict[behaviour.player_slot],
                 'estimated_rank_universal': self.estimated_rank_universal,
                 'duration': self.duration,
                 'game_mode_str': self.game_mode_str,
